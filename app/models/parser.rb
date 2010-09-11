@@ -1,8 +1,11 @@
 class Parser
-  def self.parse(file_name)
+  def self.parse(file_name, class_name)
+    raise 'NoArgumentGiven' if class_name.nil?
+    class_name = class_name.to_s.capitalize
     file = File.open(file_name)   
     
     regexp = /^\.([A-Z]) (\d*)|^\.([A-Z])|(^[^\.].*)/
+    
 
     # $1 Existe un indice
     # $2 Numero de Indice
@@ -10,10 +13,12 @@ class Parser
     # $4 Contenido de Atributo
    
     print "Parsing...\n"
+    obj = nil
+    
     until file.eof? do
-    #100.times do
       if file.gets =~ regexp
-        
+
+=begin        
         if $1 and $2
           if @doc
             @doc.terms_definition
@@ -37,11 +42,28 @@ class Parser
         if $4
           eval("@doc.#{@temp} +=\$4")
         end      
+=end
+
+      if $1 and $2  # Detectamos la primera parte del archivo. Es la letra I, y su ID.
+        if obj.nil?
+          obj = eval("#{class_name}.new") # El id es autoasignado porque es llave primaria.
+        elsif
+          obj.save; obj = obj.eval("#{class_name}.new")
+        end
+        
+      elsif $3      # Encontramos una seccion
+        obj.start_section($3)
+        
+      elsif $4      # Encontramos contenido de una seccion.
+        obj.add_to_section($4)
+        
+      end      
+      
       end  # regexp match
-    end #file.gets
-    
+    end #file.gets    
+    obj.save #Save last obj.
     file.close
-    @doc.terms_definition; @doc.save #Save last doc.
+    
     Term.set_idf
     print "Parsing: Done\n"    
     true
