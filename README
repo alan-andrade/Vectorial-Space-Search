@@ -1,0 +1,19 @@
+Alan Andrade Cestelos
+Juan Manuel Pita
+
+Para correr la aplicacion.
+
+1. Instalar Ruby.
+2. Instalar Ruby on Rails ya sea con ruby gems, o directo de la pagina. rubyonrails.com
+3. Tener MySQL instalado, sabiendo usuario y contrasenia.
+4. Editar el archivo 'config/database.yml' y editar usuario, passwd y nombre de la base de datos (creada previamente)
+5. desde el directorio de la aplicacion, correr las migraciones con. rake db:migrate
+5. desde el directorio, levantar la aplicacion con. script/server
+6. USAR la aplicion. (Al momento de subir los archivos de cranfield, tardara 2hr aprox.)
+
+_______________
+
+Trabajo realizado previamente en ruby.
+
+http://github.com/alanandrade/Modelo-Vectorial-Ruby
+

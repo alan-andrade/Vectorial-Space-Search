@@ -1,0 +1,28 @@
+<% field_set_tag '1.   Document Fields' do %>
+  <% form_tag docs_path, :multipart=>true do %>
+    <p><%= label_tag 'Collection File (Cranfield.all.1400, Medline.all, etc.)' %></p>
+    <p><%= file_field_tag :collection %></p>
+    <small><%= Doc.count %> Documents in DB.</small><br />
+    <%= submit_tag :Upload %>
+  <% end %>
+<% end %>
+<br />
+<% field_set_tag '2.   Queries Documents Fields' do %>
+  <% form_tag queries_path, :multipart  =>  true  do %>
+    <p><%= label_tag 'Queries File (Cranfield.qry, Medline.qry, etc.)' %></p>
+    <p><%= file_field_tag :queries %></p>
+    <small><%= Query.all(:group=>'query_id').count %> Queries in DB.</small><br />
+    <%= submit_tag  :Upload %>
+  <% end %>
+<% end %>
+<% field_set_tag '3.  Select Query' do%>
+  <% form_tag search_path, :multipart => true do %>
+    <%= select_tag :query_id, options_from_collection_for_select(Query.all(:group=>'query_id'), 'query_id', 'query_id')%>
+    <%= radio_button_tag  'metodo', 'tfidf' %> Tfidf 
+    <%= radio_button_tag  'metodo', 'coseno' %> Coseno
+    <%= submit_tag :Search %>
+  <% end %>
+<% end %>
+<h3>Interesting Stats</h3>
+<p>Total terms: <%= number_with_delimiter Term.count %></p>
+<p>Total Docs: <%= number_with_delimiter  Doc.count %></p>

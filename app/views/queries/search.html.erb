@@ -1,0 +1,79 @@
+<script type='text/javascript' src='http://www.google.com/jsapi'></script>
+
+<h2>Query Results for query # <%= @query_id %></h2>
+<p><b>Terminos de la consulta:</b> <%= @query_terms.join(', ') %></p>
+<div style="float:right; text-align: left; width: 460px;">
+  <h3>Total Results: <%= @results.size %></h3>
+  <%= button_to :back, root_path %>
+  <hr />
+  <div id="chart_div">
+  </div>     
+
+  <h3>Respuestas de archivo .rel</h3>
+    <table>
+      <tr><th>Documento</th><th>Relevancia</th></tr>
+      <% for answer in @answers %>
+       <tr>
+          <td><%= answer.doc_id %></td>
+          <td><%= answer.relevance || -1 %></td>
+        </tr>
+      <% end %>  
+    </table> 
+</div>
+
+<table>
+  <tr><th>Documento</th><th>Similitud</th><th>Precision</th><th>Cobertura</th></tr>
+  
+  <% mostrados    = 1.0 %>
+  <% relevantes   = 0.0 %>
+  <% coleccion    = @doc_ids.size.to_f %>
+  <% array_relevantes = [] %>
+  <% array_cobertura  = [] %>
+  
+  <% for result in @results %>  
+    <tr >      
+        <% if @doc_ids.include?(result.docid) %>
+        <% relevantes += 1 %>
+        <td class="relevant">
+           <% array_relevantes << (number_with_precision (relevantes  / mostrados) * 100, :precision=>2) %>
+           <% array_cobertura << (number_with_precision relevantes  / coleccion, :precision=>2) %>
+           <%= link_to result.docid, doc_path(result.docid) %>
+        <%else %>
+        <td>
+            <%= result.docid  %>
+        <% end %>
+      </td>
+      <td><%= number_with_precision result.weight, :precision=>3 %></td>
+      <td>
+        <%= number_with_precision (relevantes  / mostrados) * 100, :precision=>2  %> %
+      </td>
+      <td>
+        <%= number_with_precision relevantes  / coleccion, :precision=>2 %>
+      </td>      
+    </tr>
+   <% mostrados += 1 %>
+  <% end %>
+</table>
+
+<script type='text/javascript'>
+      google.load('visualization', '1', {packages:['imagesparkline']});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = new google.visualization.DataTable();
+        data.addRows( <%= array_cobertura.size %> );
+//        data.addColumn('string', 'Cobertura');
+        data.addColumn('number', 'Precision');
+        data.addColumn('number', 'Cobertura');
+        <% array_cobertura.each_index do |index| %>                    
+          data.setValue(<%= index %>, 1, <%= array_cobertura[index] %>);          
+//          data.setValue(<%= array_cobertura[index] %> , 1, <%= array_relevantes[index] %>);
+        <% end %>
+        <% array_relevantes.each_index do |index| %>
+          data.setValue(<%= index %>, 0, <%= array_relevantes[index] %>);
+        <% end %>
+
+        var chart = new google.visualization.ImageSparkLine(document.getElementById('chart_div'));
+        chart.draw(data, {width: 450, height: 350, labelPosition: 'right', showValueLabels:true});
+      }
+    </script>
+
