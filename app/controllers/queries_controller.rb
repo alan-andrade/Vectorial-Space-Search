@@ -1,7 +1,7 @@
 class QueriesController < ApplicationController
 layout  'docs'
   def create
-    if  Parser.query_parse(params[:queries])
+    if  Parser.parse(params[:queries], :query)
       flash[:notice]  = 'Success parsing queries'
     else
       flash[:notice]  = 'FAIL!'

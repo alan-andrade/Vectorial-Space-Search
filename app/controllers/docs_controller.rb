@@ -11,8 +11,9 @@ class DocsController < ApplicationController
     file_name = params[:collection]
 
     respond_to do |format|
-      if Parser.parse(file_name)
-        flash[:notice] = 'Doc was successfully created.'        
+      if Parser.parse(file_name, :doc)
+        flash[:notice] = 'Doc was successfully created. Calculating IDF'
+        Term.set_idf        
         format.html { redirect_to(root_path) }
       else
         format.html { render :action => "new" }
