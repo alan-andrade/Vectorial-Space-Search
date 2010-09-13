@@ -27,7 +27,6 @@ class Parser
             obj = eval(initialize_code)
           else
             save_query_code.nil?  ? obj.save  :   eval(save_query_code)
-            print initialize_code
             obj = eval(initialize_code)
           end          
         elsif $3      # Encontramos una seccion
@@ -38,7 +37,7 @@ class Parser
       end   # regexp match
     end     # file.gets        
     file.close       
-    class_name == 'Query' ? obj.save_query : obj.save
+    eval(save_query_code)
     
     print "Parsing: Done\n"    
     true

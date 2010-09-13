@@ -7,5 +7,6 @@ class Answer < ActiveRecord::Base
         Answer.create(:query_id=>$1, :doc_id=>$2, :relevance=>$3)
       end
     end
+    true
   end
 end

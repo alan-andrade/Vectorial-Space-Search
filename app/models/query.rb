@@ -1,7 +1,6 @@
 class Query < CommonActionsObject
   set_table_name :queries
   attr_accessor :content
-  #before_save   :terms_definition
   belongs_to    :term
   
   def save_query

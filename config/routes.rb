@@ -1,6 +1,7 @@
 ActionController::Routing::Routes.draw do |map|
   map.resources :docs
   map.resources :queries
+  map.connect 'answers' , :controller=> 'answers' , :action =>  'create'
   map.root  :controller=>:docs
   map.search 'queries/seach', :controller=>'queries', :action=>'search'
 

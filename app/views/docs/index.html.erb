@@ -7,7 +7,14 @@
   <% end %>
 <% end %>
 <br />
-<% field_set_tag '2.   Queries Documents Fields' do %>
+<% field_set_tag '2.  Load Answers Document' do%>
+  <% form_tag 'answers', :multipart => true do %>
+    <p><%= label_tag  'Select Answers File. The one with relevant data.' %></p>
+    <p> <%= file_field_tag :answers_doc %> </p>
+    <%= submit_tag :Load %>
+  <% end %>
+<% end %>
+<% field_set_tag '3.   Queries Documents Fields' do %>
   <% form_tag queries_path, :multipart  =>  true  do %>
     <p><%= label_tag 'Queries File (Cranfield.qry, Medline.qry, etc.)' %></p>
     <p><%= file_field_tag :queries %></p>
@@ -15,7 +22,7 @@
     <%= submit_tag  :Upload %>
   <% end %>
 <% end %>
-<% field_set_tag '3.  Select Query' do%>
+<% field_set_tag '4.  Select Query' do%>
   <% form_tag search_path, :multipart => true do %>
     <%= select_tag :query_id, options_from_collection_for_select(Query.all(:group=>'query_id'), 'query_id', 'query_id')%>
     <%= radio_button_tag  'metodo', 'tfidf' %> Tfidf 

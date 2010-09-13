@@ -7,7 +7,8 @@
   <%= button_to :back, root_path %>
   <hr />
   <div id="chart_div">
-  </div>     
+  </div>   
+  <div id="goodChart"></div>
 
   <h3>Respuestas de archivo .rel</h3>
     <table>
@@ -43,7 +44,9 @@
             <%= result.docid  %>
         <% end %>
       </td>
-      <td><%= number_with_precision result.weight, :precision=>3 %></td>
+      <td>
+        <%= number_with_precision result.weight, :precision=>3 %>
+      </td>
       <td>
         <%= number_with_precision (relevantes  / mostrados) * 100, :precision=>2  %> %
       </td>
@@ -55,25 +58,29 @@
   <% end %>
 </table>
 
-<script type='text/javascript'>
-      google.load('visualization', '1', {packages:['imagesparkline']});
-      google.setOnLoadCallback(drawChart);
-      function drawChart() {
-        var data = new google.visualization.DataTable();
-        data.addRows( <%= array_cobertura.size %> );
-//        data.addColumn('string', 'Cobertura');
-        data.addColumn('number', 'Precision');
-        data.addColumn('number', 'Cobertura');
-        <% array_cobertura.each_index do |index| %>                    
-          data.setValue(<%= index %>, 1, <%= array_cobertura[index] %>);          
-//          data.setValue(<%= array_cobertura[index] %> , 1, <%= array_relevantes[index] %>);
-        <% end %>
-        <% array_relevantes.each_index do |index| %>
-          data.setValue(<%= index %>, 0, <%= array_relevantes[index] %>);
-        <% end %>
+<% x1 = array_cobertura.map{|ar| ar.to_f * 100 }.join(',') %>
+<% y1 = array_relevantes.join(',') %>
+<% data_params  = "#{x1}|#{y1}" %>
 
-        var chart = new google.visualization.ImageSparkLine(document.getElementById('chart_div'));
-        chart.draw(data, {width: 450, height: 350, labelPosition: 'right', showValueLabels:true});
-      }
-    </script>
+<% 
+  graph_parameters = { 
+                        :cht  => 'lxy',
+                        :chtt => 'Precision y Cobertura de Query',
+                        :chs  => '450x350',
+                        :chxt => 'x,x,y,y',
+                        :chxl => '1:|Cobertura|3:|Precision|',
+                        :chxs => '0,ff0000,12,0,lt|2,0000ff,10,1,lt',
+                        :chd  => "t:#{data_params}"   
+                      }
+                      
+  src   = ""
+  graph_parameters.each_pair{|key,value| src << "#{key}=#{value}&"} 
+  site  = "http://chart.apis.google.com/chart?"
+%>                      
 
+<div id='grafica'>
+  <%= image_tag (image_path(site+src)), :alt=>'Comportamiento de la consulta' %>  
+</div>
+<script type="text/javascript">
+  $('chart_div').insert($('grafica'))
+</script>
