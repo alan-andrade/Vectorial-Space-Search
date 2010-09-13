@@ -1,14 +1,12 @@
 <script type='text/javascript' src='http://www.google.com/jsapi'></script>
 
-<h2>Query Results for query # <%= @query_id %></h2>
-<p><b>Terminos de la consulta:</b> <%= @query_terms.join(', ') %></p>
+<h2>Query Results for query number <%= @query_id %></h2>
+<p class="terminos_consulta"><b>Terminos de la consulta:</b><br /><%= @query_terms.join(', ') %></p>
 <div style="float:right; text-align: left; width: 460px;">
-  <h3>Total Results: <%= @results.size %></h3>
-  <%= button_to :back, root_path %>
+  <h3>Total Results: <%= @results.size %></h3>  
   <hr />
   <div id="chart_div">
   </div>   
-  <div id="goodChart"></div>
 
   <h3>Respuestas de archivo .rel</h3>
     <table>
@@ -22,6 +20,7 @@
     </table> 
 </div>
 
+<%= link_to "Back", :back %>
 <table>
   <tr><th>Documento</th><th>Similitud</th><th>Precision</th><th>Cobertura</th></tr>
   
@@ -32,16 +31,17 @@
   <% array_cobertura  = [] %>
   
   <% for result in @results %>  
-    <tr >      
         <% if @doc_ids.include?(result.docid) %>
         <% relevantes += 1 %>
-        <td class="relevant">
-           <% array_relevantes << (number_with_precision (relevantes  / mostrados) * 100, :precision=>2) %>
-           <% array_cobertura << (number_with_precision relevantes  / coleccion, :precision=>2) %>
-           <%= link_to result.docid, doc_path(result.docid) %>
+          <tr class="relevant">
+              <td>
+                 <% array_relevantes << (number_with_precision (relevantes  / mostrados) * 100, :precision=>2) %>
+                 <% array_cobertura << (number_with_precision relevantes  / coleccion, :precision=>2) %>
+                 <%= link_to result.docid, doc_path(result.docid) %>
         <%else %>
-        <td>
-            <%= result.docid  %>
+          <tr>            
+              <td>
+                  <%= link_to result.docid, doc_path(result.docid) %>
         <% end %>
       </td>
       <td>
