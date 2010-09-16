@@ -1,9 +1,9 @@
 <%= @doc.id %>
 <% if @doc.title %>
-<h2>Title: <br /><%= @doc.title.capitalize %></h2>
+<h2><br /><%= @doc.title.capitalize %></h2>
 <% end %>
 <% if @doc.author %>
-<h3>Author: <%= @doc.author.capitalize %></h3>
+<h3><%= @doc.author.capitalize %></h3>
 <% end %>
 <% if @doc.content %>
 <p><%= @doc.content %></p>
