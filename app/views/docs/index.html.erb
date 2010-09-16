@@ -30,9 +30,12 @@
   
    <% field_set_tag '4.  Select Query', :class=>'rightfields' do%>
     <% form_tag search_path, :multipart => true do %>
+      Metodo:
       <%= radio_button_tag  'metodo', 'tfidf' %> Tfidf 
       <%= radio_button_tag  'metodo', 'coseno' %> Coseno
+      <br />
       <%= select_tag :query_id, options_from_collection_for_select(Query.all(:group=>'query_id'), 'query_id', 'query_id')%><br />
+      
       <%= submit_tag :Search %>
     <% end %>
   <% end %>

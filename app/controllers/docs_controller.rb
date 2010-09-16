@@ -13,7 +13,8 @@ class DocsController < ApplicationController
     respond_to do |format|
       if Parser.parse(file_name, :doc)
         flash[:notice] = 'Doc was successfully created. Calculating IDF'
-        Term.set_idf        
+        Term.set_idf
+        DocsWeight.fill     
         format.html { redirect_to(root_path) }
       else
         format.html { render :action => "new" }

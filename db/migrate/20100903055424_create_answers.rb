@@ -3,9 +3,7 @@ class CreateAnswers < ActiveRecord::Migration
     create_table :answers do |t|
       t.integer :query_id
       t.integer :doc_id
-      t.integer :relevance
-
-      t.timestamps
+      t.integer :relevance    
     end
   end
 

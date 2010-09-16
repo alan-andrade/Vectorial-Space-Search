@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100903055424) do
+ActiveRecord::Schema.define(:version => 20100915050806) do
 
   create_table "answers", :force => true do |t|
     t.integer  "query_id"
@@ -33,10 +33,19 @@ ActiveRecord::Schema.define(:version => 20100903055424) do
     t.text   "content"
   end
 
+  create_table "docs_weights", :force => true do |t|
+    t.integer "doc_id"
+    t.float   "weight"
+  end
+
   create_table "queries", :force => true do |t|
     t.integer "term_id"
     t.integer "tf"
     t.integer "query_id"
+  end
+
+  create_table "query_weights", :force => true do |t|
+    t.float "weight"
   end
 
   create_table "terms", :force => true do |t|
