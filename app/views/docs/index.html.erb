@@ -2,15 +2,16 @@
 <div class="left">
   <center>
   <%= link_to_function 'Upload Files', :class=>'big_button', do  |page| 
-      page << "Effect.toggle('forms', 'slide')" 
+      page << "Effect.toggle('forms', 'appear');"
     end
   %>
    or 
   <%= link_to_function 'Search',:class=>'big_button', do |page|
-    page << "Effect.toggle('query', 'slide')"
+      page << "Effect.toggle('query', 'appear')"
     end
   %>
   </center>
+  <hr />
   <div id="forms" style="display:none">
     <% field_set_tag '1.   Document Fields' do %>
       <% form_tag docs_path, :multipart=>true do %>
@@ -54,6 +55,11 @@
   <h3>Interesting Stats</h3>
       <p>Total terms: <%= number_with_delimiter Term.count %></p>
       <p>Total Docs: <%= number_with_delimiter  Doc.count %></p>
+  <div id="escudo">
+    <center>
+      <img src="http://www.udlap.mx/informe_rector/images/escudo.jpg" />
+    </center>
+  </div>
 </div>
 <div class="cleaner">
   &nbsp;
