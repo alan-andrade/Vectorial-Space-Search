@@ -3,6 +3,6 @@ class Doc < CommonActionsObject
 
   has_many :doc_terms
   has_many :terms, :through => :doc_terms
-  after_save :terms_definition  
-  
+  after_save :terms_definition   
+   
 end

@@ -125,6 +125,7 @@ table td, th{
   margin-right: 10px;
   margin-left:  10px;
   border-right: 1px solid #333;
+  min-height: 300px;
 }
 
 .right{
@@ -157,4 +158,10 @@ legend{
   padding: 10px;
   background: #aaa;
   color: black;
+}
+
+.big_button{
+  font-size: 200%;  
+  margin: 10px;
+  padding: 5px;
 }

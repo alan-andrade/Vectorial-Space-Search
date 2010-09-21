@@ -26,12 +26,12 @@
   
   <% mostrados    = 1.0 %>
   <% relevantes   = 0.0 %>
-  <% coleccion    = @doc_ids.size.to_f %>
+  <% coleccion    = @relevant_doc_ids.size.to_f %>
   <% array_relevantes = [] %>
   <% array_cobertura  = [] %>
   
   <% for result in @results %>  
-        <% if @doc_ids.include?(result.docid) %>
+        <% if @relevant_doc_ids.include?(result.docid) %>
         <% relevantes += 1 %>
           <tr class="relevant">
               <td>
