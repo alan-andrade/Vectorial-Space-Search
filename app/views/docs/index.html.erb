@@ -46,6 +46,7 @@
         <%= radio_button_tag  'metodo', 'tfidf' %> Tfidf 
         <%= radio_button_tag  'metodo', 'coseno' %> Coseno
         <br /><br />
+        <%= check_box_tag  'feedback' %> Relevance Feedback? <br /><br />
         
         <%= submit_tag :Search %>
       <% end %>
