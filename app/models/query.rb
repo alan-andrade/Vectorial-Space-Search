@@ -10,24 +10,36 @@ class Query < CommonActionsObject
   def self.query(queryid=1, metodo)
     case metodo
       when 'tfidf'
-        find_by_sql(  "select i.doc_id docid, sum(q.tf * t.idf * i.tf * t.idf) weight from queries q, doc_terms i, terms t where q.query_id = #{queryid} AND q.term_id = t.id AND i.term_id = t.id group by i.doc_id order by 2 desc")
+        find_by_sql(  "select 
+                          i.doc_id docid, sum(q.tf * t.idf * i.tf * t.idf) weight 
+                       from 
+                          queries q, doc_terms i, terms t 
+                       where 
+                          q.query_id = #{queryid} 
+                          AND 
+                            q.term_id = t.id 
+                          AND 
+                            i.term_id = t.id 
+                       group by 
+                          i.doc_id order by 2 desc")
       when 'coseno'
         find_by_sql(  "select 
-                        i.doc_id docid, sum(q.tf * t.idf * i.tf * t.idf) / (dw.weight * qw.weight) weight
+                        dt.doc_id docid, sum(q.tf * t.idf * dt.tf * t.idf) / (dw.weight * qw.weight) weight
                       from 
-                        queries q, doc_terms i, terms t, docs_weights dw, query_weights qw
+                        queries q, doc_terms dt, terms t, docs_weights dw, query_weights qw
                       where 
-                        i.term_id   = t.id
+                        dt.term_id   = t.id
                       AND
                         q.query_id  = #{queryid} 
                       AND
-                        dw.doc_id   = i.doc_id
+                        dw.doc_id   = dt.doc_id
                       AND
                         q.term_id   = t.id
                       group by 
-                        i.doc_id, dw.weight, qw.weight
+                        dt.doc_id, dw.weight, qw.weight
                       order by 
                         2 desc"  )
     end
-  end
+  end  
+
 end

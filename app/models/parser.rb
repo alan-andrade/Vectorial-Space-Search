@@ -18,7 +18,7 @@ class Parser
                       elsif class_name  == 'Query'
                           "#{class_name}.new(:query_id=>$2)"
                       end
-    save_query_code = (class_name == 'Query' ? "obj.save_query" : nil)
+    save_query_code = (class_name == 'Query' ? "obj.save_query" : "obj.save")
                       
     until file.eof? do
       if file.gets =~ regexp
@@ -26,7 +26,7 @@ class Parser
           if obj.nil?            
             obj = eval(initialize_code)
           else
-            save_query_code.nil?  ? obj.save  :   eval(save_query_code)
+            eval(save_query_code)
             obj = eval(initialize_code)
           end          
         elsif $3      # Encontramos una seccion

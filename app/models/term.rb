@@ -4,11 +4,7 @@ class Term < ActiveRecord::Base
   has_many  :queries
   
   def self.set_idf    
-    find_by_sql("select term_id ,log((select count(*) from docs) / count(*)) idf from doc_terms group by term_id").each do |term|
-     Term.find(term.term_id).update_attribute 'idf', term.idf
-    end    
-    #execute('insert into terms(idf) select log((select count(*) from docs) / count(*)) idf from doc_terms group by term_id')
-    # update table terms t set idf = idfs.idf select log((select count(*) from docs) / count(*)) idf from doc_terms as dt group by term_id as idfs where dt.term_id = t.id
+    connection.execute('replace into terms (id, term, idf) select term_id, t.term, log((select count(*) from docs) / count(*)) gidf from doc_terms dt, terms t where dt.term_id = t.id group by term_id')    
     true
   end  
 end

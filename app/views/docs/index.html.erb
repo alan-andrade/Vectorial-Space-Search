@@ -1,6 +1,7 @@
 
 <div class="left">
   <center>
+  <br />
   <%= link_to_function 'Upload Files', :class=>'big_button', do  |page| 
       page << "Effect.toggle('forms', 'appear');"
     end
@@ -10,7 +11,7 @@
       page << "Effect.toggle('query', 'appear')"
     end
   %>
-  </center>
+  </center><br />
   <hr />
   <div id="forms" style="display:none">
     <% field_set_tag '1.   Document Fields' do %>
