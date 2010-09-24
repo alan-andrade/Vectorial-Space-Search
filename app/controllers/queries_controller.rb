@@ -8,6 +8,7 @@ layout  'docs'
       redirect_to root_path
     else
       flash[:notice]  = 'FAIL!'
+      redirect_to root_path
     end
   end
   
@@ -27,6 +28,7 @@ layout  'docs'
     @relevant_doc_ids = @answers.map{|ans| ans.doc_id.to_s} #Array of Relevant Docs.
     results_ids       = @results.map{|doc| doc.docid}    
     
+    # If que permite usar o no relevancia dependiendo de la decision del usuario.
     if params[:feedback]
       # Cuales son los ids relevantes y cuales no.
       relevantes    = []
@@ -51,17 +53,13 @@ layout  'docs'
       @query_terms = @query_terms + (relevant_terms  - irrelevant_terms)
       total_terms_id  = query_terms_ids + relevant_terms_ids  - irrelevant_terms_ids
       
+      # Arreglos temporales para agregar los terminos a la tabla queries.
       temporal_terms_ids  , temporal_created_terms  =   {}  , []    
       
-      until total_terms_id.empty?
-        p total_terms_id
-        
-        for termid in total_terms_id
-          p termid
-          p total_terms_id.find_all{|t| t == termid }.size
-          tf = total_terms_id.find_all{|t| t == termid }.size
-          queryterm   = Query.find_by_query_id_and_term_id(@query_id, termid)
-          
+      # Se recorre el arreglo de terminos y se actualiza lo necesario en la tabla Queries para poder hacer la consulta de nuevo.
+      until total_terms_id.empty?        
+        for termid in total_terms_id         
+          queryterm   = Query.find_by_query_id_and_term_id(@query_id, termid)          
           if queryterm.nil?
             queryterm = Query.create(:query_id=>@query_id, :tf => tf, :term_id => termid)
             temporal_created_terms.push queryterm
@@ -69,15 +67,13 @@ layout  'docs'
             temporal_terms_ids[termid.to_s.to_sym]=queryterm.tf
             queryterm.update_attribute 'tf', tf
           end
-          
-          p total_terms_id.delete(termid)
         end
-        p total_terms_id
       end
+      
+      # Se realiza la consulta nuevamente.
       @results  = Query.query(@query_id, @metodo)
       
-      # Delete temporal added terms
-      p temporal_terms_ids
+      # Se remueven los terminos agregados temporalmente despues de tener los resultados deseados.
       temporal_terms_ids.each_pair do |id, tf|
         Query.find_by_query_id_and_term_id(@query_id, id.to_s).update_attribute 'tf', tf
       end
