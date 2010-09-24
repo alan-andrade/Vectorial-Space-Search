@@ -58,7 +58,9 @@ layout  'docs'
       
       # Se recorre el arreglo de terminos y se actualiza lo necesario en la tabla Queries para poder hacer la consulta de nuevo.
       until total_terms_id.empty?        
-        for termid in total_terms_id         
+        for termid in total_terms_id   
+          p total_terms_id      
+          tf = total_terms_id.count(termid)
           queryterm   = Query.find_by_query_id_and_term_id(@query_id, termid)          
           if queryterm.nil?
             queryterm = Query.create(:query_id=>@query_id, :tf => tf, :term_id => termid)
@@ -67,10 +69,12 @@ layout  'docs'
             temporal_terms_ids[termid.to_s.to_sym]=queryterm.tf
             queryterm.update_attribute 'tf', tf
           end
+          total_terms_id.delete(termid)
         end
       end
       
       # Se realiza la consulta nuevamente.
+      p 'Making new Query'
       @results  = Query.query(@query_id, @metodo)
       
       # Se remueven los terminos agregados temporalmente despues de tener los resultados deseados.
