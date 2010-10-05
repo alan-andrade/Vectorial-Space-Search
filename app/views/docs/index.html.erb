@@ -43,8 +43,9 @@
       <% form_tag search_path, :multipart => true do %>
         Query No. <%= select_tag :query_id, options_from_collection_for_select(Query.all(:group=>'query_id'), 'query_id', 'query_id')%><br /><br />
         Metodo:
-        <%= radio_button_tag  'metodo', 'tfidf' %> Tfidf 
-        <%= radio_button_tag  'metodo', 'coseno' %> Coseno
+        <% for method in Query::METHODS %>
+            <%= radio_button_tag  'metodo', "#{method}" %> <%= method %>            
+        <% end %>
         <br /><br />
         <%= check_box_tag  'feedback' %> Relevance Feedback? <br /><br />
         

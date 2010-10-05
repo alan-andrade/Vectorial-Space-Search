@@ -3,20 +3,86 @@ class Query < CommonActionsObject
   attr_accessor :content
   belongs_to    :term
   
+  METHODS = ['tfidf', 'coseno']
+  
   def save_query
     terms_definition
   end
     
   def self.query(query_id=1, metodo)
-    case metodo
-      when 'tfidf'
-        tfidf(query_id)
-      when 'coseno'
-        coseno(query_id)
-    end
+    # podemos llamarlo asi (sin checar), 
+    # porque controlamos con la constante METHODS, los metodos que tenemos disponibles.
+    self.send metodo, query_id
   end  
   
+  def self.query_with_feedback(query_id=1, 
+                                  metodo,
+                                  results,
+                                  relevant_doc_ids,
+                                  query_terms_ids,
+                                  query_terms)
+    
+      results_ids       = results.map{|doc| doc.docid} 
+    
+      # Arreglos temporales para agregar los terminos a la tabla queries.
+      temporal_terms_ids  , temporal_created_terms  =   {}  , []    
+               
+      relevantes    = []
+      for result in results
+        relevantes.push result.docid if relevant_doc_ids.include?(result.docid)
+        break if relevantes.size==5
+      end
+      
+      irrelevantes  = (results_ids - relevantes)[0..5]
+      
+      # Terminos que se agregaran, se usa el arreglo de IDS 'relevantes'
+      relevant_terms_array  = Doc.find(relevantes).map{|doc| Doc.most_important_term(doc.id) }   
+      relevant_terms        = relevant_terms_array.map{|rt| rt.term.stem }
+      relevant_terms_ids    = relevant_terms_array.map{|rt| rt.term_id.to_i}
+      
+      # Terminos que se Restaran, se usa el arreglo de IDS 'irrelevantes'
+      irrelevant_terms_array  = Doc.find(irrelevantes).map{|doc| Doc.most_important_term(doc.id)}
+      irrelevant_terms        = irrelevant_terms_array.map{|it| it.term.stem}
+      irrelevant_terms_ids    = irrelevant_terms_array.map{|it| it.term_id.to_i}
+      p "relevant terms: #{relevant_terms}"
+      p "irrelevant terms: #{irrelevant_terms}"
+      query_terms = query_terms + (relevant_terms  - irrelevant_terms)
+      total_terms_id  = query_terms_ids + relevant_terms_ids  - irrelevant_terms_ids
+      
+      
+      # Se recorre el arreglo de terminos y se actualiza lo necesario en la tabla Queries para poder hacer la consulta de nuevo.
+      until total_terms_id.empty?        
+        for termid in total_terms_id   
+          p total_terms_id      
+          tf = total_terms_id.count(termid)
+          queryterm   = Query.find_by_query_id_and_term_id(query_id, termid)          
+          if queryterm.nil?
+            queryterm = Query.create(:query_id=>query_id, :tf => tf, :term_id => termid)
+            temporal_created_terms.push queryterm
+          elsif queryterm.tf < tf
+            temporal_terms_ids[termid.to_s.to_sym]=queryterm.tf
+            queryterm.update_attribute 'tf', tf
+          end
+          total_terms_id.delete(termid)
+        end
+      end
+      
+      # Se realiza la consulta nuevamente.
+      p 'Making new Query'
+      results  = Query.query(query_id, metodo)
+      
+      # Se remueven los terminos agregados temporalmente despues de tener los resultados deseados.
+      temporal_terms_ids.each_pair do |id, tf|
+        Query.find_by_query_id_and_term_id(query_id, id.to_s).update_attribute 'tf', tf
+      end
+      
+      temporal_created_terms.each{|query| query.delete }
+            
+      results   
+  end
+  
   private
+
   
   def self.tfidf(query_id=1)
     find_by_sql(  "select 
