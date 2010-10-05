@@ -48,7 +48,7 @@
         <% end %>
         <br /><br />
         <%= check_box_tag  'feedback' %> Relevance Feedback? <br /><br />
-        
+        Iterations: <%= select_tag  :iterations,  options_from_collection_for_select((1..7).to_a, 'to_i', 'to_i' ) %><br /><br />
         <%= submit_tag :Search %>
       <% end %>
     <% end %>

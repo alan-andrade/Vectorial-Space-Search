@@ -19,7 +19,11 @@
       <% end %>  
     </table> 
 </div>
-<p>Used Technique: <%= @metodo %></p>
+<p>Technique Used : <b><%= @metodo %></b></p>
+<% if params[:feedback] %>
+  <p>Relevance Feedback Used.</p>
+  <p>Number of Iterations: <b><%= @iterations %></b></p>
+<% end %>
 <%= link_to "Back", :back %>
 <table>
   <tr><th>Documento</th><th>Similitud</th><th>Precision</th><th>Cobertura</th></tr>
