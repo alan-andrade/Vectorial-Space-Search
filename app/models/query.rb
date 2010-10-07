@@ -18,14 +18,15 @@ class Query < CommonActionsObject
   def self.query_with_feedback(query_id=1,iterations=1,metodo)    
       # TODO: Una mejor manera de resolver este problema de elegancia.
       
-      query_terms  = Query.find_all_by_query_id(query_id).map{|q| q.term } # palabras de la consulta
-      query_terms_ids = query_terms.map(&:id)
-      query_terms  = query_terms.map(&:term)   
-      results = Query.query(query_id, metodo)      
+      #query_terms  = Query.find_all_by_query_id(query_id).map{|q| q.term } # palabras de la consulta
+      query_terms_ids = Query.get_query_terms(query_id, :id)
+      query_terms     = Query.get_query_terms(query_id)
       
-      # Se recaba la informacion de los documentos relevantes en @answers. Se obtienen los ids de los documentos que resultaron.
-      answers          = Answer.find_all_by_query_id(query_id)
-      relevant_doc_ids = answers.map{|ans| ans.doc_id.to_s}
+      # Make a normal Query.   
+      results = Query.query(query_id, metodo)   
+      
+      # Retrieve the relevant documents ids.
+      relevant_doc_ids = Answer.find_all_by_query_id(query_id).map{|ans| ans.doc_id.to_s}
       results_ids      = results[:list].map{|doc| doc.docid} 
     
       # Arreglos temporales para agregar los terminos a la tabla queries.
@@ -53,7 +54,7 @@ class Query < CommonActionsObject
         irrelevant_terms_ids    = irrelevant_terms_array.map{|it| it.term_id.to_i}
         p "relevant terms: #{relevant_terms}"
         p "irrelevant terms: #{irrelevant_terms}"
-        query_terms = query_terms + (relevant_terms  - irrelevant_terms)
+        #query_terms = query_terms + (relevant_terms  - irrelevant_terms)
         
         total_terms_id  = query_terms_ids + relevant_terms_ids  - irrelevant_terms_ids
         
@@ -77,7 +78,7 @@ class Query < CommonActionsObject
         
         # Se realiza la consulta nuevamente.
         p 'Making new Query'
-        results[:list]  = Query.query(query_id, metodo)
+        results  = Query.query(query_id, metodo)
         
       end      #end iterator
       
@@ -88,7 +89,7 @@ class Query < CommonActionsObject
       
       temporal_created_terms.each{|query| query.delete }
             
-      { :list => results  , :query_terms  =>  query_terms }
+      results
   end
   
   private
@@ -134,8 +135,8 @@ class Query < CommonActionsObject
     {:list => list, :query_terms  =>  Query.get_query_terms(query_id)}                      
   end
   
-  def self.get_query_terms(query_id)
-    Term.find(Query.find_all_by_query_id(query_id).map{|q| q.term_id }).map(&:term)
+  def self.get_query_terms(query_id=1, attr=:term)
+    Term.find(Query.find_all_by_query_id(query_id).map{|q| q.term_id }).map{|t| eval("t.#{attr}")}
   end
   
 
