@@ -1,12 +1,12 @@
-<script type='text/javascript' src='http://www.google.com/jsapi'></script>
+<script type='text/javascript' src='/javascripts/highcharts-adapter.min.js'></script>
+<script type='text/javascript' src='/javascripts/highcharts.js'></script>
 
 <h2>Query Results for query number <%= @query_id %></h2>
 <p class="terminos_consulta"><b>Terminos de la consulta:</b><br /><%= @query_terms.join(', ') %></p>
 <div style="float:right; text-align: left; width: 460px;">
   <h3>Total Results: <%= @results.size %></h3>  
   <hr />
-  <div id="chart_div">
-  </div>   
+     <div id='grafica' style="width: 430px;"></div>  
 
   <h3>Respuestas de archivo .rel</h3>
     <table>
@@ -62,29 +62,41 @@
   <% end %>
 </table>
 
-<% x1 = array_cobertura.map{|ar| ar.to_f * 100 }.join(',') %>
-<% y1 = array_relevantes.join(',') %>
-<% data_params  = "#{x1}|#{y1}" %>
-
-<% 
-  graph_parameters = { 
-                        :cht  => 'lxy',
-                        :chtt => 'Precision y Cobertura de Query',
-                        :chs  => '450x350',
-                        :chxt => 'x,x,y,y',
-                        :chxl => '1:|Cobertura|3:|Precision|',
-                        :chxs => '0,ff0000,12,0,lt|2,0000ff,10,1,lt',
-                        :chd  => "t:#{data_params}"   
-                      }
-                      
-  src   = ""
-  graph_parameters.each_pair{|key,value| src << "#{key}=#{value}&"} 
-  site  = "http://chart.apis.google.com/chart?"
-%>                      
-
-<div id='grafica'>
-  <%= image_tag (image_path(site+src)), :alt=>'Comportamiento de la consulta' %>  
-</div>
 <script type="text/javascript">
-  $('chart_div').insert($('grafica'))
-</script>
+   var chart = new Highcharts.Chart({
+       chart: {
+           renderTo: 'grafica'
+       },
+       credits:{
+        enabled: false 
+       },
+       title: {
+        text: "Precision/Recall"
+       },
+       xAxis: {
+         title: {
+             text: "Recall"
+           },
+         max: 100,
+         min: 0
+       },
+       yAxis: {
+         title: {
+           text: "Precision"
+         },
+         max: 100,
+         min: 0
+       },     
+       
+       series: [{
+           data: [
+            <% array_relevantes.each_index do |index| %>
+              [<%= array_cobertura[index].to_f*100 -%>, <%= array_relevantes[index] -%>]
+              <% unless array_cobertura[index] == array_cobertura.last -%>
+                ,
+              <% end -%>
+            <% end -%>
+           ]
+       }]
+   });     
+</script>            

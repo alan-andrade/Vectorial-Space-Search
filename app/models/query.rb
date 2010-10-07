@@ -3,7 +3,7 @@ class Query < CommonActionsObject
   attr_accessor :content
   belongs_to    :term
   
-  METHODS = ['tfidf', 'coseno']
+  METHODS = ['point_product', 'coseno']
   
   def save_query
     terms_definition
@@ -34,8 +34,10 @@ class Query < CommonActionsObject
       temporal_terms_ids  , temporal_created_terms  =   {}  , []    
       relevantes    = []
       
-      iterations.to_i.times do        
-        for result in results
+      iterations.to_i.times do  
+      
+         #TODO: Refactoring for a  cleaner and more self explainable code. 
+        results.each do |result|      
           relevantes.push result.docid if relevant_doc_ids.include?(result.docid)
           break if relevantes.size==5
         end
@@ -54,6 +56,7 @@ class Query < CommonActionsObject
         p "relevant terms: #{relevant_terms}"
         p "irrelevant terms: #{irrelevant_terms}"
         query_terms = query_terms + (relevant_terms  - irrelevant_terms)
+        
         total_terms_id  = query_terms_ids + relevant_terms_ids  - irrelevant_terms_ids
         
         
@@ -93,7 +96,7 @@ class Query < CommonActionsObject
   private
 
   
-  def self.tfidf(query_id=1)
+  def self.point_product(query_id=1)
     find_by_sql(  "select 
                       i.doc_id docid, sum(q.tf * t.idf * i.tf * t.idf) weight 
                    from 
