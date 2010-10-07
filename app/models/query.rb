@@ -11,14 +11,11 @@ class Query < CommonActionsObject
   end
     
   def self.query(query_id=1, metodo)
-    # podemos llamarlo asi (sin checar), 
-    # porque controlamos con la constante METHODS, los metodos que tenemos disponibles.
+    # Since we render in our views the methods available in METHODS.
     self.send metodo, query_id
   end  
   
-  def self.query_with_feedback(query_id=1,iterations=1,metodo)
-    
-      # Se decidio Utilizar el CACHE de las consultas hechas en SQL, y reducir argumentos.
+  def self.query_with_feedback(query_id=1,iterations=1,metodo)    
       # TODO: Una mejor manera de resolver este problema de elegancia.
       
       query_terms  = Query.find_all_by_query_id(query_id).map{|q| q.term } # palabras de la consulta
@@ -29,7 +26,7 @@ class Query < CommonActionsObject
       # Se recaba la informacion de los documentos relevantes en @answers. Se obtienen los ids de los documentos que resultaron.
       answers          = Answer.find_all_by_query_id(query_id)
       relevant_doc_ids = answers.map{|ans| ans.doc_id.to_s}
-      results_ids      = results.map{|doc| doc.docid} 
+      results_ids      = results[:list].map{|doc| doc.docid} 
     
       # Arreglos temporales para agregar los terminos a la tabla queries.
       temporal_terms_ids  , temporal_created_terms  =   {}  , []    
@@ -38,7 +35,7 @@ class Query < CommonActionsObject
       iterations.to_i.times do  
       
          #TODO: Refactoring for a  cleaner and more self explainable code. 
-        results.each do |result|      
+        results[:list].each do |result|      
           relevantes.push result.docid if relevant_doc_ids.include?(result.docid)
           break if relevantes.size==5
         end
@@ -80,7 +77,7 @@ class Query < CommonActionsObject
         
         # Se realiza la consulta nuevamente.
         p 'Making new Query'
-        results  = Query.query(query_id, metodo)
+        results[:list]  = Query.query(query_id, metodo)
         
       end      #end iterator
       
@@ -91,14 +88,14 @@ class Query < CommonActionsObject
       
       temporal_created_terms.each{|query| query.delete }
             
-      results   
+      { :list => results  , :query_terms  =>  query_terms }
   end
   
   private
 
   
   def self.point_product(query_id=1)
-    find_by_sql(  "select 
+    list = find_by_sql(  "select 
                       i.doc_id docid, sum(q.tf * t.idf * i.tf * t.idf) weight 
                    from 
                       queries q, doc_terms i, terms t 
@@ -110,10 +107,15 @@ class Query < CommonActionsObject
                         i.term_id = t.id 
                    group by 
                       i.doc_id order by 2 desc")
+                      
+    return {
+      :list => list,
+      :query_terms => Query.get_query_terms(query_id)
+    }
   end
   
   def self.coseno(query_id=1)
-    find_by_sql(  "select 
+    list  = find_by_sql(  "select 
                       dt.doc_id docid, sum(q.tf * t.idf * dt.tf * t.idf) / (dw.weight * qw.weight) weight
                     from 
                       queries q, doc_terms dt, terms t, docs_weights dw, query_weights qw
@@ -128,7 +130,12 @@ class Query < CommonActionsObject
                     group by 
                       dt.doc_id, dw.weight, qw.weight
                     order by 
-                      2 desc"  )    
+                      2 desc"  )
+    {:list => list, :query_terms  =>  Query.get_query_terms(query_id)}                      
+  end
+  
+  def self.get_query_terms(query_id)
+    Term.find(Query.find_all_by_query_id(query_id).map{|q| q.term_id }).map(&:term)
   end
   
 

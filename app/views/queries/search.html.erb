@@ -2,9 +2,9 @@
 <script type='text/javascript' src='/javascripts/highcharts.js'></script>
 
 <h2>Query Results for query number <%= @query_id %></h2>
-<p class="terminos_consulta"><b>Terminos de la consulta:</b><br /><%= @query_terms.join(', ') %></p>
+<p class="terminos_consulta"><b>Terminos de la consulta:</b><br /><%= @results[:query_terms].join(', ') %></p>
 <div style="float:right; text-align: left; width: 460px;">
-  <h3>Total Results: <%= @results.size %></h3>  
+  <h3>Total Results: <%= @results[:list].size %></h3>  
   <hr />
      <div id='grafica' style="width: 430px;"></div>  
 
@@ -34,7 +34,7 @@
   <% array_relevantes = [] %>
   <% array_cobertura  = [] %>
   
-  <% for result in @results %>  
+  <% for result in @results[:list] %>  
         <% if @relevant_doc_ids.include?(result.docid) %>
         <% relevantes += 1 %>
           <tr class="relevant">
