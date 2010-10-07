@@ -1,17 +1,9 @@
 <%= @doc.id %>
-<% if @doc.title %>
-<h2><br /><%= @doc.title.capitalize %></h2>
-<% end %>
-<% if @doc.author %>
-<h3><%= @doc.author.capitalize %></h3>
-<% end %>
-<% if @doc.content %>
-<p><%= @doc.content %></p>
-<% end %>
+<h2><br /><%= @doc.title.capitalize rescue nil %></h2>
+<h3><%= @doc.author.capitalize rescue nil %></h3>
+<p><%= @doc.content rescue nil %></p>
 <br />
-<% if @doc.biblio %>
-<i><%= @doc.biblio %></i>
-<% end %>
+<i><%= @doc.biblio rescue nil%></i>
 <br />
 <br />
 <%= link_to 'Get Back', :back %>
