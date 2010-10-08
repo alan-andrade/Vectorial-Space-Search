@@ -83,7 +83,7 @@ class Query < CommonActionsObject
       end
       
       # Remove the terms created to achieve relevance feedback.
-      temporal_created_terms.each{|query| query.delete }
+      Query.delete(temporal_created_terms)
       
       results
   end
