@@ -29,6 +29,5 @@ layout  'docs'
     end
     
   end
-
 end
 

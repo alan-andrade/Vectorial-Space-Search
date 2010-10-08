@@ -1,9 +1,7 @@
 class Query < CommonActionsObject
   set_table_name :queries
-  attr_accessor :content
   belongs_to    :term
 
-  #METHODS = ['point_product', 'coseno']
   METHODS = {:point_product=>'Point Product', :coseno => "Coseno"}
 
   def save_query
