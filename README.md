@@ -1,9 +1,9 @@
 # Modelo Vectorial para Busqueda.
 
 ## TODO
-1. Graficas hechas por alguna libreria de Ruby. No depender de google Graphs.
-2. Retroalimentacion de Relevacia.
-3. Mejorar consulta cuando se usa el coseno. Tarda 7 minutos para una consulta!!!
+1. Mejorar consulta cuando se usa el coseno. Tarda 7 minutos para una consulta!!!
+2. Clustering.
+3. Cuando se hace el clustering, como se usa el arbol para la consulta dada.
 
 ## Desarroladores
 
