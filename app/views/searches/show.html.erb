@@ -91,12 +91,8 @@
        series: [{
            data: [
             <% array_relevantes.each_index do |index| %>
-              [<%= array_cobertura[index].to_f*100 -%>, <%= array_relevantes[index] -%>]
-              <% unless array_cobertura[index] == array_cobertura.last -%>
-                ,
-              <% end -%>
-            <% end -%>
-           ]
+              [<%= array_cobertura[index].to_f*100 -%>, <%= array_relevantes[index] -%>] <%= "," unless array_cobertura[index] == array_cobertura.last -%>
+            <% end -%> ]
        }]
    });     
 </script>            
