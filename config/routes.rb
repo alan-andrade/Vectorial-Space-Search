@@ -1,9 +1,10 @@
 ActionController::Routing::Routes.draw do |map|
   map.resources :docs
   map.resources :queries
+  map.resources :searches
   map.connect 'answers' , :controller=> 'answers' , :action =>  'create'
   map.root  :controller=>:docs
-  map.search 'queries/seach', :controller=>'queries', :action=>'search'
+  #map.search 'queries/seach', :controller=>'queries', :action=>'search'
 
   # The priority is based upon order of creation: first created -> highest priority.
 

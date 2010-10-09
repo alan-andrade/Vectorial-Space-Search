@@ -40,7 +40,7 @@
    </div>
   <div id="query" style="display:none">    
      <% field_set_tag '4.  Select Query', :class=>'rightfields' do%>
-      <% form_tag search_path, :multipart => true do %>
+      <% form_tag searches_path, :multipart => true do %>
         Query No. <%= select_tag :query_id, options_from_collection_for_select(Query.all(:group=>'query_id'), 'query_id', 'query_id')%><br /><br />
         Metodo:
         <% Query::METHODS.each_pair do |key, value| %>

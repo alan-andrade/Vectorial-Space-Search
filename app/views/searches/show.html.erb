@@ -1,0 +1,102 @@
+<script type='text/javascript' src='/javascripts/highcharts-adapter.min.js'></script>
+<script type='text/javascript' src='/javascripts/highcharts.js'></script>
+
+<h2>Query Results for query number <%= @query_id %></h2>
+<p class="terminos_consulta"><b>Terminos de la consulta:</b><br /><%= @results[:query_terms].join(', ') %></p>
+<div style="float:right; text-align: left; width: 460px;">
+  <h3>Total Results: <%= @results[:list].size %></h3>  
+  <hr />
+     <div id='grafica' style="width: 430px;"></div>  
+
+  <h3>Respuestas de archivo .rel</h3>
+    <table>
+      <tr><th>Documento</th><th>Relevancia</th></tr>
+      <% for answer in @answers %>
+       <tr>
+          <td><%= answer.doc_id %></td>
+          <td><%= answer.relevance || -1 %></td>
+        </tr>
+      <% end %>  
+    </table> 
+</div>
+<p>Technique Used : <b><%= @metodo %></b></p>
+<% if params[:feedback] %>
+  <p>Relevance Feedback Used.</p>
+  <p>Number of Iterations: <b><%= @iterations %></b></p>
+<% end %>
+<%= link_to "Back", :back %>
+<table>
+  <tr><th>Documento</th><th>Similitud</th><th>Precision</th><th>Cobertura</th></tr>
+  
+  <% mostrados    = 1.0 %>
+  <% relevantes   = 0.0 %>
+  <% coleccion    = @relevant_doc_ids.size.to_f %>
+  <% array_relevantes = [] %>
+  <% array_cobertura  = [] %>
+  
+  <% for result in @results[:list] %>  
+        <% if @relevant_doc_ids.include?(result.docid) %>
+        <% relevantes += 1 %>
+          <tr class="relevant">
+              <td>
+                 <% array_relevantes << (number_with_precision (relevantes  / mostrados) * 100, :precision=>2) %>
+                 <% array_cobertura << (number_with_precision relevantes  / coleccion, :precision=>2) %>
+                 <%= link_to result.docid, doc_path(result.docid) %>
+        <%else %>
+          <tr>            
+              <td>
+                  <%= link_to result.docid, doc_path(result.docid) %>
+        <% end %>
+      </td>
+      <td>
+        <%= number_with_precision result.weight, :precision=>3 %>
+      </td>
+      <td>
+        <%= number_with_precision (relevantes  / mostrados) * 100, :precision=>2  %> %
+      </td>
+      <td>
+        <%= number_with_precision relevantes  / coleccion, :precision=>2 %>
+      </td>      
+    </tr>
+   <% mostrados += 1 %>
+  <% end %>
+</table>
+
+<script type="text/javascript">
+   var chart = new Highcharts.Chart({
+       chart: {
+           renderTo: 'grafica'
+       },
+       credits:{
+        enabled: false 
+       },
+       title: {
+        text: "Precision/Recall"
+       },
+       xAxis: {
+         title: {
+             text: "Recall"
+           },
+         max: 100,
+         min: 0
+       },
+       yAxis: {
+         title: {
+           text: "Precision"
+         },
+         max: 100,
+         min: 0
+       },     
+       
+       series: [{
+           data: [
+            <% array_relevantes.each_index do |index| %>
+              [<%= array_cobertura[index].to_f*100 -%>, <%= array_relevantes[index] -%>]
+              <% unless array_cobertura[index] == array_cobertura.last -%>
+                ,
+              <% end -%>
+            <% end -%>
+           ]
+       }]
+   });     
+</script>            
