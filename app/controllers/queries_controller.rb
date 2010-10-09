@@ -25,7 +25,7 @@ layout  'docs'
     if params[:feedback]  # User wants Relevance Feedback ?         
       @results = Query.query_with_feedback(@query_id, @iterations, @metodo)     
     else                  # No feedback? Make the Normal Query!   
-      @results      = Query.query(@query_id, @metodo)          
+      @results = Query.query(@query_id, @metodo)          
     end
     
   end
