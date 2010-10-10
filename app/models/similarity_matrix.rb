@@ -1,6 +1,5 @@
 class SimilarityMatrix < ActiveRecord::Base
-  def self.calculate_matrix
-    
+  def self.calculate_matrix    
     docs_quantity = Doc.count
     
     for first_index in 1..docs_quantity
@@ -17,7 +16,7 @@ class SimilarityMatrix < ActiveRecord::Base
   
   ##
   # Method used to save time. 2 queries in 1. When similarity is nil, all row in nil.
-  # TODO: Solve the problem of inserting nil.
+  # TODO: Solve the problem of inserting nil row when is nil only the similarity
   ##
   def self.insert_docs_similarity(doc_id_1, doc_id_2)
     query   = "

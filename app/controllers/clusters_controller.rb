@@ -4,6 +4,7 @@ class ClustersController < ApplicationController
     SimilarityMatrix.calculate_matrix
     
     # Recursively, separate into clusters.   
+    Cluster.clusterize
     
   end
 end
