@@ -9,14 +9,12 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101007173511) do
+ActiveRecord::Schema.define(:version => 20101009142246) do
 
   create_table "answers", :force => true do |t|
-    t.integer  "query_id"
-    t.integer  "doc_id"
-    t.integer  "relevance"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.integer "query_id"
+    t.integer "doc_id"
+    t.integer "relevance"
   end
 
   create_table "doc_terms", :id => false, :force => true do |t|
@@ -47,6 +45,12 @@ ActiveRecord::Schema.define(:version => 20101007173511) do
   create_table "query_weights", :force => true do |t|
     t.float   "weight"
     t.integer "query_id"
+  end
+
+  create_table "similarity_matrices", :id => false, :force => true do |t|
+    t.integer "x"
+    t.integer "y"
+    t.float   "similarity"
   end
 
   create_table "terms", :force => true do |t|

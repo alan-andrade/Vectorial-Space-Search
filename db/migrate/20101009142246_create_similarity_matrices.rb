@@ -3,7 +3,7 @@ class CreateSimilarityMatrices < ActiveRecord::Migration
     create_table :similarity_matrices, :id=>false do |t|
       t.integer :x
       t.integer :y
-      t.fload   :similarity
+      t.float   :similarity
     end
   end
 
