@@ -9,12 +9,26 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101009142246) do
+ActiveRecord::Schema.define(:version => 20101010052628) do
 
   create_table "answers", :force => true do |t|
     t.integer "query_id"
     t.integer "doc_id"
     t.integer "relevance"
+  end
+
+  create_table "cluster_docs", :id => false, :force => true do |t|
+    t.integer "cluster_id"
+    t.integer "doc_id"
+  end
+
+  create_table "cluster_joins", :id => false, :force => true do |t|
+    t.integer "parent_id"
+    t.integer "child_id"
+  end
+
+  create_table "clusters", :force => true do |t|
+    t.float "centroid"
   end
 
   create_table "doc_terms", :id => false, :force => true do |t|
