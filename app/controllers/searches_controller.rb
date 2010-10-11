@@ -17,6 +17,10 @@ layout  'docs'
       @results = Query.query(@query_id, @metodo)          
     end
     
+    if params[:clustering]
+      
+    end
+    
     render :action => :show
   end
   
