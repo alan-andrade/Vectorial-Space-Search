@@ -6,5 +6,7 @@ class ClustersController < ApplicationController
     # Recursively, separate into clusters.   
     Cluster.clusterize
     
+    flash[:notice]  = "Clustering Completed"
+    redirect_to root_path
   end
 end
