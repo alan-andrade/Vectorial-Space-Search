@@ -39,6 +39,7 @@
     <% end %>
    </div>
   <div id="query" style="display:none">    
+    <%= button_to "Clusterize Collection",:action=>'create', :controller=>'clusters',:confirm=>'This may take a long time. Would you like to continue ?' %><br />
      <% field_set_tag '4.  Select Query', :class=>'rightfields' do%>
       <% form_tag searches_path, :multipart => true do %>
         Query No. <%= select_tag :query_id, options_from_collection_for_select(Query.all(:group=>'query_id'), 'query_id', 'query_id')%><br /><br />
@@ -49,7 +50,7 @@
         <br /><br />
         <%= check_box_tag  'feedback' %> Relevance Feedback? <br /><br />
         Iterations: <%= select_tag  :iterations,  options_from_collection_for_select((1..7).to_a, 'to_i', 'to_i' ) %><br /><br />
-        <%= check_box_tag  'Clustering' %>  Clustering?  <br /><br />
+        <%= check_box_tag  'Clustering' %>  Clustering?  
         <%= submit_tag :Search %>
       <% end %>
     <% end %>

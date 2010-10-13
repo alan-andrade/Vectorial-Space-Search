@@ -14,6 +14,8 @@ class SimilarityMatrix < ActiveRecord::Base
     end      
   end
   
+  private
+  
   ##
   # Method used to save time. 2 queries in 1. When similarity is nil, all row in nil.
   # TODO: Solve the problem of inserting nil row when is nil only the similarity
