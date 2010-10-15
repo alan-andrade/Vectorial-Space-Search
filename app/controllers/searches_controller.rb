@@ -18,7 +18,8 @@ layout  'docs'
     end
     
     if params[:clustering]
-      
+      p "With clustering"
+      @results  = Query.results_with_clustering(@results, @answers)
     end
     
     render :action => :show

@@ -8,6 +8,26 @@ class Query < CommonActionsObject
   def save_query
     terms_definition
   end
+  
+  def self.results_with_clustering(results, answers)
+    query_terms           = results[:query_terms]
+    list                  = results[:list]    
+    list_with_clustering  = []
+    resulting_list        = []
+    
+    p relevant_doc_ids      = list.map(&:doc_id) & answers.map{|ans| ans.doc_id.to_s}
+    relevant_doc_ids.map!{|d| d.to_i}
+    relevant_doc_ids.each do |t|
+      p list_with_clustering << Doc.find(t).cluster.docs.map(&:id)
+      p list_with_clustering << Doc.find(t).cluster.parent.childs.map{|cluster| cluster.docs.map(&:id)}
+    end
+    list_with_clustering.flatten!.uniq!
+    list.map(&:doc_id)
+    list_with_clustering
+    resulting_list << list.find_all{|query| list_with_clustering.include?(query.doc_id.to_i)}
+    resulting_list.flatten!
+    {:list=> resulting_list ,:query_terms=>query_terms}
+  end
 
   def self.query(query_id=1, metodo)
     # Since we render in our views the methods available in METHODS.
@@ -20,23 +40,23 @@ class Query < CommonActionsObject
       known_relevant_doc_ids  = Answer.find_all_by_query_id(query_id).map{|ans| ans.doc_id.to_s}
 
       #query_terms  = Query.find_all_by_query_id(query_id).map{|q| q.term } # palabras de la consulta
-      query_terms_ids   = Query.get_query_terms(query_id, :id)
+      query_terms_ids         = Query.get_query_terms(query_id, :id)
 
       # Make a normal Query.
-      results           = Query.query(query_id, metodo)
+      results                 = Query.query(query_id, metodo)
 
       # Retrieve the relevant doc ids from the results.
-      results_doc_ids   = results[:list].map{|doc| doc.docid}
+      results_doc_ids         = results[:list].map{|doc| doc.doc_id}
 
       # Arreglos temporales para agregar los terminos a la tabla queries.
       temporal_terms_ids  , temporal_created_terms  =   {}  , []
-      relevant_doc_ids    = []
+      relevant_doc_ids        = []
 
       #start iterations
       iterations.to_i.times do
         
         # Get the first 5 relevant Documents ids
-        relevant_doc_ids    = (results[:list].map(&:docid) & known_relevant_doc_ids)[0..5] 
+        relevant_doc_ids    = (results[:list].map(&:doc_id) & known_relevant_doc_ids)[0..5] 
         # Get the first 5 non-relevant Documents ids
         irrelevant_doc_ids  = (results_doc_ids - relevant_doc_ids)[0..5]
 
@@ -94,7 +114,7 @@ class Query < CommonActionsObject
 
   def self.point_product(query_id=1)
     list = find_by_sql(  "select
-                      i.doc_id docid, sum(q.tf * t.idf * i.tf * t.idf) weight
+                      i.doc_id doc_id, sum(q.tf * t.idf * i.tf * t.idf) weight
                    from
                       queries q, doc_terms i, terms t
                    where
@@ -114,7 +134,7 @@ class Query < CommonActionsObject
 
   def self.coseno(query_id=1)
     list  = find_by_sql(  "select
-                      dt.doc_id docid, sum(q.tf * t.idf * dt.tf * t.idf) / (dw.weight * qw.weight) weight
+                      dt.doc_id doc_id, sum(q.tf * t.idf * dt.tf * t.idf) / (dw.weight * qw.weight) weight
                     from
                       queries q, doc_terms dt, terms t, docs_weights dw, query_weights qw
                     where

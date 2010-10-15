@@ -2,12 +2,12 @@
 <div class="left">
   <center>
   <br />
-  <%= link_to_function 'Upload Files', :class=>'big_button', do  |page| 
+  <%= link_to_function 'Upload Files', :class=>'big_button' do  |page| 
       page << "Effect.toggle('forms', 'appear');"
     end
   %>
    or 
-  <%= link_to_function 'Search',:class=>'big_button', do |page|
+  <%= link_to_function 'Search',:class=>'big_button' do |page|
       page << "Effect.toggle('query', 'appear')"
     end
   %>
@@ -50,7 +50,7 @@
         <br /><br />
         <%= check_box_tag  'feedback' %> Relevance Feedback? <br /><br />
         Iterations: <%= select_tag  :iterations,  options_from_collection_for_select((1..7).to_a, 'to_i', 'to_i' ) %><br /><br />
-        <%= check_box_tag  'Clustering' %>  Clustering?  
+        <%= check_box_tag  'clustering' %>  Clustering?  <br />
         <%= submit_tag :Search %>
       <% end %>
     <% end %>
